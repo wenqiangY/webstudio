@@ -93,14 +93,14 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       // Service-to-service OAuth token call requires a specified host for the wstd.dev domain
-      host: "wstd.dev",
+      // host: "wstd.dev",
       // Needed for SSL
       proxy: {},
 
-      https: {
-        key: readFileSync("../../https/privkey.pem"),
-        cert: readFileSync("../../https/fullchain.pem"),
-      },
+      // https: {
+      //   key: readFileSync("../../https/privkey.pem"),
+      //   cert: readFileSync("../../https/fullchain.pem"),
+      // },
       cors: ((
         req: IncomingMessage,
         callback: (error: Error | null, options: CorsOptions | null) => void
