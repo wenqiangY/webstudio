@@ -1,6 +1,5 @@
-import { applyPatches, enableMapSet, enablePatches } from "immer";
+import { applyPatches, enableMapSet, enablePatches, type Patch } from "immer";
 import type { ActionFunctionArgs } from "@remix-run/server-runtime";
-import type { Change } from "immerhin";
 import {
   Breakpoints,
   Breakpoint,
@@ -50,6 +49,11 @@ import { publicStaticEnv } from "~/env/env.static";
 import { preventCrossOriginCookie } from "~/services/no-cross-origin-cookie";
 import { checkCsrf } from "~/services/csrf-session.server";
 import type { Transaction } from "~/shared/sync-client";
+
+type Change = {
+  namespace: string;
+  patches: Array<Patch>;
+};
 
 type PatchData = {
   transactions: Transaction<Change[]>[];
@@ -452,9 +456,4 @@ export const action = async ({
       errors: error instanceof Error ? error.message : JSON.stringify(error),
     };
   }
-};
-
-// Reduces Vercel function size from 29MB to 9MB for unknown reasons; effective when used in limited files.
-export const config = {
-  maxDuration: 30, // seconds
 };

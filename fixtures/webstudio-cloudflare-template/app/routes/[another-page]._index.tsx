@@ -13,6 +13,7 @@ import {
   isLocalResource,
   loadResource,
   loadResources,
+  cachedFetch,
   formIdFieldName,
   formBotFieldName,
 } from "@webstudio-is/sdk/runtime";
@@ -37,13 +38,13 @@ import {
   getRemixParams,
   contactEmail,
 } from "../__generated__/[another-page]._index.server";
-import { assetBaseUrl, imageLoader } from "../constants.mjs";
+import * as constants from "../constants.mjs";
 import css from "../__generated__/index.css?url";
 import { sitemap } from "../__generated__/$resources.sitemap.xml";
 
 const customFetch: typeof fetch = (input, init) => {
   if (typeof input !== "string") {
-    return fetch(input, init);
+    return cachedFetch(projectId, input, init);
   }
 
   if (isLocalResource(input, "sitemap.xml")) {
@@ -53,7 +54,7 @@ const customFetch: typeof fetch = (input, init) => {
     return Promise.resolve(response);
   }
 
-  return fetch(input, init);
+  return cachedFetch(projectId, input, init);
 };
 
 export const loader = async (arg: LoaderFunctionArgs) => {
@@ -151,8 +152,8 @@ export const links: LinksFunction = () => {
   if (favIconAsset) {
     result.push({
       rel: "icon",
-      href: imageLoader({
-        src: `${assetBaseUrl}${favIconAsset}`,
+      href: constants.imageLoader({
+        src: `${constants.assetBaseUrl}${favIconAsset}`,
         // width,height must be multiple of 48 https://developers.google.com/search/docs/appearance/favicon-in-search
         width: 144,
         height: 144,
@@ -167,7 +168,7 @@ export const links: LinksFunction = () => {
   for (const asset of pageFontAssets) {
     result.push({
       rel: "preload",
-      href: `${assetBaseUrl}${asset}`,
+      href: `${constants.assetBaseUrl}${asset}`,
       as: "font",
       crossOrigin: "anonymous",
     });
@@ -176,7 +177,7 @@ export const links: LinksFunction = () => {
   for (const backgroundImageAsset of pageBackgroundImageAssets) {
     result.push({
       rel: "preload",
-      href: `${assetBaseUrl}${backgroundImageAsset}`,
+      href: `${constants.assetBaseUrl}${backgroundImageAsset}`,
       as: "image",
     });
   }
@@ -271,8 +272,7 @@ const Outlet = () => {
   return (
     <ReactSdkContext.Provider
       value={{
-        imageLoader,
-        assetBaseUrl,
+        ...constants,
         resources,
         breakpoints,
         onError: console.error,
@@ -285,8 +285,8 @@ const Outlet = () => {
         pageMeta={pageMeta}
         host={host}
         siteName={siteName}
-        imageLoader={imageLoader}
-        assetBaseUrl={assetBaseUrl}
+        imageLoader={constants.imageLoader}
+        assetBaseUrl={constants.assetBaseUrl}
       />
       <PageSettingsTitle>{pageMeta.title}</PageSettingsTitle>
       <PageSettingsCanonicalLink href={url} />
