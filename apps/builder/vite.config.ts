@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       remix({
-        presets: [vercelPreset()],
+        // presets: [vercelPreset()],
         future: {
           v3_lazyRouteDiscovery: false,
           v3_relativeSplatPath: false,
